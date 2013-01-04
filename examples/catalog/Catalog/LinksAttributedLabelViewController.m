@@ -63,7 +63,7 @@
 #endif
   label.autoresizingMask = UIViewAutoresizingFlexibleDimensions;
   label.frame = CGRectInset(self.view.bounds, 20, 20);
-  label.font = [UIFont fontWithName:@"AmericanTypewriter" size:15];
+  label.font = [UIFont fontWithName:@"AmericanTypewriter" size:45];
 
   // When the user taps a link we can change the way the link text looks.
   label.attributesForHighlightedLink = [NSDictionary dictionaryWithObject:(id)RGBCOLOR(255, 0, 0).CGColor forKey:(NSString *)kCTForegroundColorAttributeName];
@@ -81,11 +81,9 @@
   label.linksHaveUnderlines = YES;
 
   label.text =
-  @"A screen on the dash flickers and displays an artist's rendition of the planet."
-  // We can use \n characters to separate lines of text.
-  @"\nSigned beneath the image: tenach.deviantart.com";
+  @"tail character test -> m";
 
-  NSRange linkRange = [label.text rangeOfString:@"an artist's rendition of the planet"];
+  NSRange linkRange = [label.text rangeOfString:@"tail character test -> m"];
 
   // Explicitly adds a link at a given range.
   [label addLink:[NSURL URLWithString:@"http://th04.deviantart.net/fs71/300W/f/2010/145/c/9/Planet_Concept_1_by_Tenach.jpg"]
