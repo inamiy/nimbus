@@ -440,7 +440,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setMaxMinZoomScalesForCurrentBounds {
-  CGSize imageSize = _imageView.bounds.size;
+  CGSize imageSize = _imageView.image.size;
   
   // Avoid crashing if the image has no dimensions.
   if (imageSize.width <= 0 || imageSize.height <= 0) {
