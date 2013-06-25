@@ -24,6 +24,8 @@
 #error "Nimbus requires ARC support."
 #endif
 
+#define FIT_TO_SCREEN_ON_APPEAR  1  // ignored when zoomingAboveOriginalSizeIsEnabled=YES
+
 /**
  * A UIScrollView that centers the zooming view's frame as the user zooms.
  *
@@ -254,7 +256,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)pageDidDisappear {
-  _scrollView.zoomScale = _scrollView.minimumZoomScale;
+  [self updateZoomScale];
 }
 
 
@@ -289,7 +291,7 @@
   [self setMaxMinZoomScalesForCurrentBounds];
 
   // Start off with the image fully-visible on the screen.
-  _scrollView.zoomScale = _scrollView.minimumZoomScale;
+  [self updateZoomScale];
 
   [self setNeedsLayout];
 }
@@ -319,7 +321,7 @@
     [self setMaxMinZoomScalesForCurrentBounds];
 
     // Fit the image on screen.
-    _scrollView.zoomScale = _scrollView.minimumZoomScale;
+    [self updateZoomScale];
 
     // Disable zoom bouncing if zooming is disabled, otherwise the view will allow pinching.
     _scrollView.bouncesZoom = enabled;
@@ -493,6 +495,19 @@
     _scrollView.maximumZoomScale = self.isZoomingEnabled ? maxScale : minScale;
   }
   _scrollView.minimumZoomScale = minScale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)updateZoomScale {
+#if FIT_TO_SCREEN_ON_APPEAR
+  CGFloat zoomScale = [self scaleForSize:_imageView.image.size
+                              boundsSize:_scrollView.bounds.size
+                         useMinimalScale:YES];
+  _scrollView.zoomScale = zoomScale;
+#else
+  _scrollView.zoomScale = _scrollView.minimumZoomScale;
+#endif
 }
 
 
