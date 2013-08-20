@@ -40,6 +40,14 @@ CGSize NISizeOfAttributedStringConstrainedToSize(NSAttributedString *attributedS
   if (nil == attributedString) {
     return CGSizeZero;
   }
+  
+  BOOL isIOS5OrPrior = ([[[UIDevice currentDevice] systemVersion] compare:@"6.0"] == NSOrderedAscending);
+  
+  // -1 for manual-tail-trunctation using kCTLineBreakByCharWrapping in iOS5 (see below).
+  if (isIOS5OrPrior) {
+    size.width -= 1;
+    size.height -= 1;
+  }
 
   CFAttributedStringRef attributedStringRef = (__bridge CFAttributedStringRef)attributedString;
   CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attributedStringRef);
@@ -68,7 +76,18 @@ CGSize NISizeOfAttributedStringConstrainedToSize(NSAttributedString *attributedS
 
   CFRange fitCFRange = CFRangeMake(0, 0);
   CGSize newSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, range, NULL, size, &fitCFRange);
-
+  
+  //
+  // +1 to recover size-1 for manual-tail-trunctation using kCTLineBreakByCharWrapping in iOS5.
+  //
+  // This is recommended to avoid unexpected truncation which rarely occurs
+  // via normal CTFramesetterSuggestFrameSizeWithConstraints only seen in iOS5.
+  //
+  if (isIOS5OrPrior) {
+    newSize.width += 1;
+    newSize.height += 1;
+  }
+  
   if (nil != framesetter) {
     CFRelease(framesetter);
     framesetter = nil;
@@ -1703,7 +1722,7 @@ CGFloat ImageDelegateGetWidthCallback(void* refCon) {
     case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
     case UILineBreakModeClip: return kCTLineBreakByClipping;
     case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-    case UILineBreakModeTailTruncation: return kCTLineBreakByWordWrapping; // We handle truncation ourself.
+    case UILineBreakModeTailTruncation: return kCTLineBreakByCharWrapping; // We handle truncation ourself.
     case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
     default: return 0;
   }
@@ -1715,7 +1734,7 @@ CGFloat ImageDelegateGetWidthCallback(void* refCon) {
     case NSLineBreakByCharWrapping: return kCTLineBreakByCharWrapping;
     case NSLineBreakByClipping: return kCTLineBreakByClipping;
     case NSLineBreakByTruncatingHead: return kCTLineBreakByTruncatingHead;
-    case NSLineBreakByTruncatingTail: return kCTLineBreakByWordWrapping; // We handle truncation ourself.
+    case NSLineBreakByTruncatingTail: return kCTLineBreakByCharWrapping; // We handle truncation ourself.
     case NSLineBreakByTruncatingMiddle: return kCTLineBreakByTruncatingMiddle;
     default: return 0;
   }
