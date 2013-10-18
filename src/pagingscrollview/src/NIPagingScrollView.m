@@ -485,6 +485,11 @@ const CGFloat NIPagingScrollViewDefaultPageMargin = 10;
     [self.delegate scrollViewDidScroll:scrollView];
   }
 
+  // always try displaying next pages if pagingEnabled=NO
+  if (!self.pagingScrollView.pagingEnabled) {
+    [self updateVisiblePagesShouldNotifyDelegate:YES];
+  }
+
   if (_isKillingAnimation) {
     // The content size is calculated based on the number of pages and the scroll view frame.
     CGPoint offset = [self frameForPageAtIndex:_centerPageIndex].origin;
