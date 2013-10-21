@@ -485,10 +485,8 @@ const CGFloat NIPagingScrollViewDefaultPageMargin = 10;
     [self.delegate scrollViewDidScroll:scrollView];
   }
 
-  // always try displaying next pages if pagingEnabled=NO
-  if (!self.pagingScrollView.pagingEnabled) {
-    [self updateVisiblePagesShouldNotifyDelegate:YES];
-  }
+  // always try displaying next new pages on scrollViewDidScroll, or sometimes page will be missing when fast-scrolling
+  [self updateVisiblePagesShouldNotifyDelegate:YES];
 
   if (_isKillingAnimation) {
     // The content size is calculated based on the number of pages and the scroll view frame.
